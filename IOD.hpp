@@ -69,7 +69,7 @@ struct IOD {
     static void enableProfile(const std::string &key);
     static void disableProfile(const std::string &key);
 private:
-    static IOD_InputState input_state[256];
+    static std::unordered_map<IOD_InputCode, IOD_InputState> input_state;
     static std::unordered_map<std::string, IOD_Profile*> profiles;
     static float mouse_x;
     static float mouse_y;
