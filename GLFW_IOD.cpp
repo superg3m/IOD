@@ -85,7 +85,7 @@ std::unordered_map<int, IOD_InputCode> glfwToInputCode = {
 void IOD_GLFW_Setup(GLFWwindow* window) {
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int, int action, int) {
         IOD_InputCode cb_code = glfwToInputCode[key];
-        IOD::updateInputCode(cb_code, action == GLFW_PRESS);
+        IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
         for (const auto& [key, profile] : IOD::profiles) {
             if (!profile->active) {
                 continue;
@@ -108,7 +108,7 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
         IOD_InputCode cb_code = glfwToInputCode[button];
-        IOD::updateInputCode(cb_code, action == GLFW_PRESS);
+        IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
         for (const auto& [key, profile] : IOD::profiles) {
             if (!profile->active) {
                 continue;
