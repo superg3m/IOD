@@ -37,9 +37,9 @@ void IOD::poll() {
         }
 
         for (const auto& [key_pair, fn] : profile->bindings) {
-            const auto [code, desired_states] = key_pair;
-            auto state = input_state[code];
-            if (IOD_input_state_has_flag(desired_states, state) && fn) {
+            IOD_InputCode code = key_pair.first;
+            IOD_InputState desired_states = key_pair.second;
+            if (IOD_input_state_has_flag(desired_states, input_state[code]) && fn) {
                 fn();
             }
         }
