@@ -11,9 +11,9 @@ inline bool IOD_input_state_has_flag(IOD_InputState value, IOD_InputState flag) 
 
 void IOD::updateInputCode(IOD_InputCode code, bool down) {
     if (down) {
-        input_state[code] = (input_state[code] == IOD_InputState::UP || input_state[code] == IOD_InputState::RELEASED) ? IOD_InputState::PRESSED : IOD_InputState::DOWN;
+        IOD::input_state[code] = (IOD::input_state[code] == IOD_InputState::UP || IOD::input_state[code] == IOD_InputState::RELEASED) ? IOD_InputState::PRESSED : IOD_InputState::DOWN;
     } else {
-        input_state[code] = (input_state[code] == IOD_InputState::DOWN || input_state[code] == IOD_InputState::PRESSED) ? IOD_InputState::RELEASED : IOD_InputState::UP;
+        IOD::input_state[code] = (IOD::input_state[code] == IOD_InputState::DOWN || IOD::input_state[code] == IOD_InputState::PRESSED) ? IOD_InputState::RELEASED : IOD_InputState::UP;
     }
 }
 
