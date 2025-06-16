@@ -8,14 +8,14 @@
 #include <functional>
 #include <unordered_map>
 
-enum IOD_InputState : int {
-    IOD_INPUT_STATE_UP       = 0x1,
-    IOD_INPUT_STATE_PRESSED  = 0x2,
-    IOD_INPUT_STATE_DOWN     = 0x4,
-    IOD_INPUT_STATE_RELEASED = 0x8
+enum class IOD_InputState : uint8_t {
+    UP       = 0x1,
+    PRESSED  = 0x2,
+    DOWN     = 0x4,
+    RELEASED = 0x8
 };
 
-enum IOD_InputCode : int {
+enum IOD_InputCode : uint8_t {
     IOD_KEY_A = 'A', IOD_KEY_B = 'B', IOD_KEY_C = 'C', IOD_KEY_D = 'D',
     IOD_KEY_E = 'E', IOD_KEY_F = 'F', IOD_KEY_G = 'G', IOD_KEY_H = 'H',
     IOD_KEY_I = 'I', IOD_KEY_J = 'J', IOD_KEY_K = 'K', IOD_KEY_L = 'L',
