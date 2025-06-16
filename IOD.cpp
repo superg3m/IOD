@@ -5,11 +5,11 @@ std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
 float IOD::mouse_x = 0.0f;
 float IOD::mouse_y = 0.0f;
 
-IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
+inline IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
     return static_cast<IOD_InputState>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
 }
 
-uint8_t operator&(IOD_InputState lhs, IOD_InputState rhs) {
+inline uint8_t operator&(IOD_InputState lhs, IOD_InputState rhs) {
     return static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs);
 }
 
