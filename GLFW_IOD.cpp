@@ -84,7 +84,8 @@ std::unordered_map<int, IOD_InputCode> glfwToInputCode = {
 
 void IOD_GLFW_Setup(GLFWwindow* window) {
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int, int action, int) {
-        IOD::updateInputCode(glfwToInputCode[key], action == GLFW_PRESS);
+        IOD_InputCode cb_code = glfwToInputCode[key];
+        IOD::updateInputCode(cb_code, action == GLFW_PRESS);
         for (const auto& [key, profile] : IOD::profiles) {
             if (!profile->active) {
                 continue;
@@ -92,6 +93,10 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
 
             for (const auto& [key_pair, fn] : profile->bindings) {
                 IOD_InputCode code = key_pair.first;
+                if (code != cb_code) {
+                    continue;
+                }
+
                 IOD_InputState desired_states = key_pair.second;
                 IOD_InputState actual_state = IOD::input_state[code];
                 if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
@@ -102,7 +107,8 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
     });
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
-        IOD::updateInputCode(glfwToInputCode[button], action == GLFW_PRESS);
+        IOD_InputCode cb_code = glfwToInputCode[button];
+        IOD::updateInputCode(cb_code, action == GLFW_PRESS);
         for (const auto& [key, profile] : IOD::profiles) {
             if (!profile->active) {
                 continue;
@@ -110,6 +116,10 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
 
             for (const auto& [key_pair, fn] : profile->bindings) {
                 IOD_InputCode code = key_pair.first;
+                if (code != cb_code) {
+                    continue;
+                }
+
                 IOD_InputState desired_states = key_pair.second;
                 IOD_InputState actual_state = IOD::input_state[code];
                 if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
