@@ -85,10 +85,38 @@ std::unordered_map<int, IOD_InputCode> glfwToInputCode = {
 void IOD_GLFW_Setup(GLFWwindow* window) {
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int, int action, int) {
         IOD::updateInputCode(glfwToInputCode[key], action == GLFW_PRESS);
+        for (const auto& [key, profile] : IOD::profiles) {
+            if (!profile->active) {
+                continue;
+            }
+
+            for (const auto& [key_pair, fn] : profile->bindings) {
+                IOD_InputCode code = key_pair.first;
+                IOD_InputState desired_states = key_pair.second;
+                IOD_InputState actual_state = IOD::input_state[code];
+                if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
+                    fn();
+                }
+            }
+        }
     });
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
         IOD::updateInputCode(glfwToInputCode[button], action == GLFW_PRESS);
+        for (const auto& [key, profile] : IOD::profiles) {
+            if (!profile->active) {
+                continue;
+            }
+
+            for (const auto& [key_pair, fn] : profile->bindings) {
+                IOD_InputCode code = key_pair.first;
+                IOD_InputState desired_states = key_pair.second;
+                IOD_InputState actual_state = IOD::input_state[code];
+                if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
+                    fn();
+                }
+            }
+        }
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow*, double xpos, double ypos) {

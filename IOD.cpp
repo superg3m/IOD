@@ -42,10 +42,6 @@ std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
 float IOD::mouse_x = 0.0f;
 float IOD::mouse_y = 0.0f;
 
-inline bool IOD_input_state_has_flag(IOD_InputState value, IOD_InputState flag) {
-    return (static_cast<uint8_t>(value) & static_cast<uint8_t>(flag)) != 0;
-}
-
 void IOD::updateInputCode(IOD_InputCode code, bool down) {
     if (down) {
         IOD::input_state[code] = (IOD::input_state[code] == IOD_InputState::UP || IOD::input_state[code] == IOD_InputState::RELEASED) ? IOD_InputState::PRESSED : IOD_InputState::DOWN;
@@ -76,7 +72,7 @@ void IOD::poll() {
             IOD_InputCode code = key_pair.first;
             IOD_InputState desired_states = key_pair.second;
             IOD_InputState actual_state = IOD::input_state[code];
-            if (IOD_input_state_has_flag(desired_states, actual_state) && fn) {
+            if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
                 fn();
             }
         }

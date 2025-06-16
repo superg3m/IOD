@@ -15,6 +15,8 @@ enum class IOD_InputState : uint8_t {
     RELEASED = 0x8
 };
 
+#define IOD_INPUT_STATE_HAS_FLAG(value, flag) ((static_cast<uint8_t>(value) & static_cast<uint8_t>(flag)) != 0)
+
 inline constexpr IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
     return static_cast<IOD_InputState>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
 }
@@ -68,9 +70,10 @@ struct IOD {
     static void deleteProfile(const std::string &key);
     static void enableProfile(const std::string &key);
     static void disableProfile(const std::string &key);
-private:
+
     static std::unordered_map<IOD_InputCode, IOD_InputState> input_state;
     static std::unordered_map<std::string, IOD_Profile*> profiles;
+private:
     static float mouse_x;
     static float mouse_y;
 };
