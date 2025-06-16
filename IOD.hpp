@@ -59,11 +59,11 @@ struct IOD {
     static float getMouseX();
     static float getMouseY();
 
-    IOD_Profile* createProfile(const std::string &key);
-    IOD_Profile* getProfile(const std::string &key);
-    void deleteProfile(const std::string &key);
-    void enableProfile(const std::string &key);
-    void disableProfile(const std::string &key);
+    static IOD_Profile* createProfile(const std::string &key);
+    static IOD_Profile* getProfile(const std::string &key);
+    static void deleteProfile(const std::string &key);
+    static void enableProfile(const std::string &key);
+    static void disableProfile(const std::string &key);
 private:
     static std::unordered_map<IOD_InputCode, IOD_InputState> input_state;
     static std::unordered_map<std::string, IOD_Profile*> profiles;
