@@ -55,8 +55,35 @@ void IOD::updateMousePosition(float x, float y) {
     mouse_y = y;
 }
 
-float IOD::getMouseX() { return mouse_x; }
-float IOD::getMouseY() { return mouse_y; }
+float IOD::getMouseX() { 
+    return mouse_x; 
+}
+float IOD::getMouseY() { 
+    return mouse_y; 
+}
+
+void IOD::poll() {
+    for (const auto& [key, profile] : IOD::profiles) {
+        if (!profile->active) {
+            continue;
+        }
+
+        for (const auto& [key_pair, fn] : profile->bindings) {
+            IOD_InputCode code = key_pair.first;
+            IOD_InputState desired_states = key_pair.second;
+            IOD_InputState actual_state = IOD::input_state[code];
+            if (actual_state == IOD_InputState::PRESSED) {
+                IOD::updateInputCode(code, true);
+            } else if (actual_state == IOD_InputState::RELEASED) {
+                IOD::updateInputCode(code, false);
+            }
+
+            if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
+                fn();
+            }
+        }
+    }
+}
 
 IOD_InputState IOD::getState(IOD_InputCode code) {
     return IOD::input_state[code];

@@ -57,6 +57,7 @@ struct IOD_Profile {
 };
 
 struct IOD {
+    static void poll();
     static void updateInputCode(IOD_InputCode code, bool down);
     static void updateMousePosition(float x, float y);
 
