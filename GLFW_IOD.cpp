@@ -88,7 +88,7 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
     });
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
-        IOD::updateInputCode(static_cast<IOD_InputCode>(button + IOD_MOUSE_BUTTON_LEFT), action == GLFW_PRESS);
+        IOD::updateInputCode(glfwToInputCode[button], action == GLFW_PRESS);
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow*, double xpos, double ypos) {
