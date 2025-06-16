@@ -26,7 +26,7 @@ float IOD::getMouseX() { return mouse_x; }
 float IOD::getMouseY() { return mouse_y; }
 
 IOD_InputState IOD::getState(IOD_InputCode code) {
-    return input_state[code];
+    return IOD::input_state[code];
 }
 
 void IOD::poll() {
@@ -38,7 +38,7 @@ void IOD::poll() {
         for (const auto& [key_pair, fn] : profile->bindings) {
             IOD_InputCode code = key_pair.first;
             IOD_InputState desired_states = key_pair.second;
-            IOD_InputState actual_state = input_state[code];
+            IOD_InputState actual_state = IOD::input_state[code];
             if (IOD_input_state_has_flag(desired_states, actual_state) && fn) {
                 fn();
             }
