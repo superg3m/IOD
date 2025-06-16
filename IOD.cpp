@@ -5,20 +5,12 @@ std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
 float IOD::mouse_x = 0.0f;
 float IOD::mouse_y = 0.0f;
 
-inline IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
-    return static_cast<IOD_InputState>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
-}
-
-inline uint8_t operator&(IOD_InputState lhs, IOD_InputState rhs) {
-    return static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs);
-}
-
 void IOD::updateInputCode(IOD_InputCode code, bool down) {
     IOD_InputState& state = input_state[code];
     if (down) {
-        state = (state == IOD_InputState::UP || state == IOD_InputState::RELEASED) ? IOD_InputState::PRESSED : IOD_InputState::DOWN;
+        state = (state == IOD_INPUT_STATE_UP || state == IOD_INPUT_STATE_RELEASED) ? IOD_INPUT_STATE_PRESSED : IOD_INPUT_STATE_DOWN;
     } else {
-        state = (state == IOD_InputState::DOWN || state == IOD_InputState::PRESSED) ? IOD_InputState::RELEASED : IOD_InputState::UP;
+        state = (state == IOD_INPUT_STATE_DOWN || state == IOD_INPUT_STATE_PRESSED) ? IOD_INPUT_STATE_RELEASED : IOD_INPUT_STATE_UP;
     }
 }
 
