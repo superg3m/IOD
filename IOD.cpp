@@ -62,23 +62,6 @@ IOD_InputState IOD::getState(IOD_InputCode code) {
     return IOD::input_state[code];
 }
 
-void IOD::poll() {
-    for (const auto& [key, profile] : profiles) {
-        if (!profile->active) {
-            continue;
-        }
-
-        for (const auto& [key_pair, fn] : profile->bindings) {
-            IOD_InputCode code = key_pair.first;
-            IOD_InputState desired_states = key_pair.second;
-            IOD_InputState actual_state = IOD::input_state[code];
-            if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
-                fn();
-            }
-        }
-    }
-}
-
 IOD_Profile* IOD::createProfile(const std::string &key) {
     IOD_Profile* ret = new IOD_Profile;
     ret->active = true;
