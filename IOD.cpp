@@ -5,11 +5,6 @@ std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
 float IOD::mouse_x = 0.0f;
 float IOD::mouse_y = 0.0f;
 
-inline IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
-    return static_cast<IOD_InputState>(
-        static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
-}
-
 inline bool IOD_input_state_has_flag(IOD_InputState value, IOD_InputState flag) {
     return (static_cast<uint8_t>(value) & static_cast<uint8_t>(flag)) != 0;
 }

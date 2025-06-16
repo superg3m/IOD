@@ -15,6 +15,10 @@ enum class IOD_InputState : uint8_t {
     RELEASED = 0x8
 };
 
+inline constexpr IOD_InputState operator|(IOD_InputState lhs, IOD_InputState rhs) {
+    return static_cast<IOD_InputState>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
+}
+
 enum IOD_InputCode : uint8_t {
     IOD_KEY_A = 'A', IOD_KEY_B = 'B', IOD_KEY_C = 'C', IOD_KEY_D = 'D',
     IOD_KEY_E = 'E', IOD_KEY_F = 'F', IOD_KEY_G = 'G', IOD_KEY_H = 'H',
