@@ -98,7 +98,7 @@ void IOD_GLFW_BIND_MOUSE_MOVE_CALLBACK(GLFWcursorposfun cb) {
     mouseMoveCallback = cb;
 }
 
-void IOD_GLFW_Setup(GLFWwindow* window) {
+void IOD_GLFW_SETUP(GLFWwindow* window) {
     IOD::glfw_window_instance = (void*)window;
     
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
