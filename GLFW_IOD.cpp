@@ -109,7 +109,9 @@ bool IOD_GLFW_SETUP(GLFWwindow* window) {
             return;
         }
 
-        keyCallback((GLFWwindow*)IOD::glfw_window_instance, key, scancode, action, mods);  
+        if (keyCallback) {
+            keyCallback((GLFWwindow*)IOD::glfw_window_instance, key, scancode, action, mods);  
+        }
 
         IOD_InputCode cb_code = glfwToInputCode[key];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
@@ -138,7 +140,9 @@ bool IOD_GLFW_SETUP(GLFWwindow* window) {
             return;
         }
 
-        mouseButtonCallback((GLFWwindow*)IOD::glfw_window_instance, button, action, mods);      
+        if (mouseButtonCallback) {
+            mouseButtonCallback((GLFWwindow*)IOD::glfw_window_instance, button, action, mods);   
+        }
 
         IOD_InputCode cb_code = glfwToInputCode[button];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
@@ -168,7 +172,9 @@ bool IOD_GLFW_SETUP(GLFWwindow* window) {
         }
 
         IOD::updateMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
-        mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
+        if (mouseMoveCallback) {
+            mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
+        }
     });
 
     return true;
