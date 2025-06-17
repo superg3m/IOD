@@ -102,7 +102,7 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     IOD::glfw_window_instance = (void*)window;
     
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
-        if (IOD::glfw_window_instance) {
+        if (!IOD::glfw_window_instance) {
             return;
         }
 
@@ -131,7 +131,7 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     });
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int mods) {
-        if (IOD::glfw_window_instance) {
+        if (!IOD::glfw_window_instance) {
             return;
         }
 
@@ -160,7 +160,7 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow*, double xpos, double ypos) {
-        if (IOD::glfw_window_instance) {
+        if (!IOD::glfw_window_instance) {
             return;
         }
 
