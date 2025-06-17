@@ -82,8 +82,28 @@ std::unordered_map<int, IOD_InputCode> glfwToInputCode = {
     {GLFW_MOUSE_BUTTON_MIDDLE, IOD_MOUSE_BUTTON_MIDDLE}
 };
 
+GLFWkeyfun keyCallback = nullptr;
+GLFWmousebuttonfun mouseButtonCallback = nullptr;
+GLFWcursorposfun mouseMoveCallback = nullptr;
+
+void IOD_GLFW_BIND_KEY_CALLBACK(GLFWkeyfun cb) {
+    keyCallback = cb;
+}
+
+void IOD_GLFW_BIND_MOUSE_BUTTON_CALLBACK(GLFWmousebuttonfun cb) {
+    mouseButtonCallback = cb;
+}
+
+void IOD_GLFW_BIND_MOUSE_MOVE_CALLBACK(GLFWcursorposfun cb) {
+    mouseMoveCallback = cb;
+}
+
 void IOD_GLFW_Setup(GLFWwindow* window) {
-    glfwSetKeyCallback(window, [](GLFWwindow*, int key, int, int action, int) {
+    IOD::glfw_window_instance = (void*)window;
+    
+    glfwSetKeyCallback(window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
+        keyCallback((GLFWwindow*)IOD::glfw_window_instance, key, scancode, action, mods);      
+
         IOD_InputCode cb_code = glfwToInputCode[key];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
         for (const auto& [key, profile] : IOD::profiles) {
@@ -106,7 +126,9 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
         }
     });
 
-    glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
+    glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int mods) {
+        mouseButtonCallback((GLFWwindow*)IOD::glfw_window_instance, button, action, mods);      
+
         IOD_InputCode cb_code = glfwToInputCode[button];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
         for (const auto& [key, profile] : IOD::profiles) {
@@ -130,6 +152,7 @@ void IOD_GLFW_Setup(GLFWwindow* window) {
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow*, double xpos, double ypos) {
+        mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
         IOD::updateMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
     });
 }

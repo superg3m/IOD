@@ -39,6 +39,7 @@ std::unordered_map<IOD_InputCode, IOD_InputState> IOD::input_state = {
 };
 
 std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
+void* IOD::glfw_window_instance = nullptr;
 float IOD::mouse_x = 0.0f;
 float IOD::mouse_y = 0.0f;
 

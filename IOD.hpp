@@ -73,6 +73,8 @@ struct IOD {
 
     static std::unordered_map<IOD_InputCode, IOD_InputState> input_state;
     static std::unordered_map<std::string, IOD_Profile*> profiles;
+
+    static void* glfw_window_instance;
 private:
     static float mouse_x;
     static float mouse_y;
