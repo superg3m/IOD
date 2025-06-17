@@ -102,7 +102,11 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     IOD::glfw_window_instance = (void*)window;
     
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
-        keyCallback((GLFWwindow*)IOD::glfw_window_instance, key, scancode, action, mods);      
+        if (IOD::glfw_window_instance) {
+            return;
+        }
+
+        keyCallback((GLFWwindow*)IOD::glfw_window_instance, key, scancode, action, mods);  
 
         IOD_InputCode cb_code = glfwToInputCode[key];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
@@ -127,6 +131,10 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     });
 
     glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int mods) {
+        if (IOD::glfw_window_instance) {
+            return;
+        }
+
         mouseButtonCallback((GLFWwindow*)IOD::glfw_window_instance, button, action, mods);      
 
         IOD_InputCode cb_code = glfwToInputCode[button];
@@ -152,7 +160,11 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow*, double xpos, double ypos) {
-        mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
+        if (IOD::glfw_window_instance) {
+            return;
+        }
+
         IOD::updateMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
+        mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
     });
 }
