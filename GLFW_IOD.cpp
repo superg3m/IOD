@@ -98,8 +98,11 @@ void IOD_GLFW_BIND_MOUSE_MOVE_CALLBACK(GLFWcursorposfun cb) {
     mouseMoveCallback = cb;
 }
 
-void IOD_GLFW_SETUP(GLFWwindow* window) {
+bool IOD_GLFW_SETUP(GLFWwindow* window) {
     IOD::glfw_window_instance = (void*)window;
+    if (!IOD::glfw_window_instance) {
+        return false;
+    }
     
     glfwSetKeyCallback(window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
         if (!IOD::glfw_window_instance) {
@@ -167,4 +170,6 @@ void IOD_GLFW_SETUP(GLFWwindow* window) {
         IOD::updateMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
         mouseMoveCallback((GLFWwindow*)IOD::glfw_window_instance, xpos, ypos);
     });
+
+    return true;
 }
