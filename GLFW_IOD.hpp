@@ -1,6 +1,8 @@
 #pragma once
 
 #include "IOD.hpp"
+#undef GLFW_INCLUDE_NONE 
+#define GLFW_INCLUDE_NONE 
 #include <GLFW/glfw3.h>
 
 bool IOD_GLFW_SETUP(GLFWwindow* window);
