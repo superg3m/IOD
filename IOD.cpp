@@ -86,7 +86,7 @@ void IOD::poll() {
     }
 }
 
-IOD_InputState IOD::getState(IOD_InputCode code) {
+IOD_InputState IOD::getInputState(IOD_InputCode code) {
     return IOD::input_state[code];
 }
 
