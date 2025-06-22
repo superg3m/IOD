@@ -64,7 +64,15 @@ float IOD::getMouseY() {
 }
 
 void IOD::poll() {
-    for (const auto& [key, profile] : IOD::profiles) {
+    for (const auto &[code, state] : IOD::input_state) {
+        if (state == IOD_InputState::PRESSED) {
+            IOD::updateInputCode(code, true);
+        } else if (state == IOD_InputState::RELEASED) {
+            IOD::updateInputCode(code, false);
+        }
+    }
+
+    for (const auto &[key, profile] : IOD::profiles) {
         if (!profile->active) {
             continue;
         }
@@ -73,12 +81,6 @@ void IOD::poll() {
             IOD_InputCode code = key_pair.first;
             IOD_InputState desired_states = key_pair.second;
             IOD_InputState actual_state = IOD::input_state[code];
-            if (actual_state == IOD_InputState::PRESSED) {
-                IOD::updateInputCode(code, true);
-            } else if (actual_state == IOD_InputState::RELEASED) {
-                IOD::updateInputCode(code, false);
-            }
-
             if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
                 fn();
             }
