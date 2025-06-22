@@ -61,7 +61,7 @@ struct IOD {
     static void updateInputCode(IOD_InputCode code, bool down);
     static void updateMousePosition(float x, float y);
 
-    static IOD_InputState getState(IOD_InputCode code);
+    static IOD_InputState getInputState(IOD_InputCode code);
     static float getMouseX();
     static float getMouseY();
 
