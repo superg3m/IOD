@@ -40,6 +40,4 @@
 build_cl/
 build_gcc/
 c_build/
-*.ps1
-!bootstrap.ps1
 .vscode/
