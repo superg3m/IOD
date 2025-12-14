@@ -115,7 +115,7 @@ bool IOD_GLFW_SETUP(GLFWwindow* window) {
 
         IOD_InputCode cb_code = glfwToInputCode[key];
         IOD::updateInputCode(cb_code, action != GLFW_RELEASE);
-        for (const auto& [key, profile] : IOD::profiles) {
+        for (const auto& [_, profile] : IOD::profiles) {
             if (!profile->active) {
                 continue;
             }
