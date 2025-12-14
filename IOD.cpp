@@ -1,127 +1,185 @@
-#include <IOD.hpp>
 #include <algorithm>
+#include <map>
 
-std::unordered_map<IOD_InputCode, IOD_InputState> IOD::input_state = {
-    {IOD_KEY_A, IOD_InputState::UP}, {IOD_KEY_B, IOD_InputState::UP}, {IOD_KEY_C, IOD_InputState::UP},
-    {IOD_KEY_D, IOD_InputState::UP}, {IOD_KEY_E, IOD_InputState::UP}, {IOD_KEY_F, IOD_InputState::UP},
-    {IOD_KEY_G, IOD_InputState::UP}, {IOD_KEY_H, IOD_InputState::UP}, {IOD_KEY_I, IOD_InputState::UP},
-    {IOD_KEY_J, IOD_InputState::UP}, {IOD_KEY_K, IOD_InputState::UP}, {IOD_KEY_L, IOD_InputState::UP},
-    {IOD_KEY_M, IOD_InputState::UP}, {IOD_KEY_N, IOD_InputState::UP}, {IOD_KEY_O, IOD_InputState::UP},
-    {IOD_KEY_P, IOD_InputState::UP}, {IOD_KEY_Q, IOD_InputState::UP}, {IOD_KEY_R, IOD_InputState::UP},
-    {IOD_KEY_S, IOD_InputState::UP}, {IOD_KEY_T, IOD_InputState::UP}, {IOD_KEY_U, IOD_InputState::UP},
-    {IOD_KEY_V, IOD_InputState::UP}, {IOD_KEY_W, IOD_InputState::UP}, {IOD_KEY_X, IOD_InputState::UP},
-    {IOD_KEY_Y, IOD_InputState::UP}, {IOD_KEY_Z, IOD_InputState::UP},
+#include "IOD.hpp"
 
-    {IOD_KEY_0, IOD_InputState::UP}, {IOD_KEY_1, IOD_InputState::UP}, {IOD_KEY_2, IOD_InputState::UP},
-    {IOD_KEY_3, IOD_InputState::UP}, {IOD_KEY_4, IOD_InputState::UP}, {IOD_KEY_5, IOD_InputState::UP},
-    {IOD_KEY_6, IOD_InputState::UP}, {IOD_KEY_7, IOD_InputState::UP}, {IOD_KEY_8, IOD_InputState::UP},
-    {IOD_KEY_9, IOD_InputState::UP},
+namespace IOD {
+    static float mouse_x;
+    static float mouse_y;
+    static std::map<KeyCode, KeyState> input_state;
+    
+    std::vector<Profile> profiles;
+    void* glfw_window_instance = nullptr;
 
-    {IOD_KEY_SPACE, IOD_InputState::UP}, {IOD_KEY_ENTER, IOD_InputState::UP},
-    {IOD_KEY_ESCAPE, IOD_InputState::UP}, {IOD_KEY_TAB, IOD_InputState::UP},
-    {IOD_KEY_BACKSPACE, IOD_InputState::UP},
+    void UpdateInputCode(KeyCode code, bool down) {
+        KeyState new_state;
 
-    {IOD_KEY_LEFT, IOD_InputState::UP}, {IOD_KEY_RIGHT, IOD_InputState::UP},
-    {IOD_KEY_UP, IOD_InputState::UP}, {IOD_KEY_DOWN, IOD_InputState::UP},
-    {IOD_KEY_CTRL, IOD_InputState::UP}, {IOD_KEY_SHIFT, IOD_InputState::UP},
-    {IOD_KEY_ALT, IOD_InputState::UP},
-
-    {IOD_KEY_F1, IOD_InputState::UP}, {IOD_KEY_F2, IOD_InputState::UP},
-    {IOD_KEY_F3, IOD_InputState::UP}, {IOD_KEY_F4, IOD_InputState::UP},
-    {IOD_KEY_F5, IOD_InputState::UP}, {IOD_KEY_F6, IOD_InputState::UP},
-    {IOD_KEY_F7, IOD_InputState::UP}, {IOD_KEY_F8, IOD_InputState::UP},
-    {IOD_KEY_F9, IOD_InputState::UP}, {IOD_KEY_F10, IOD_InputState::UP},
-    {IOD_KEY_F11, IOD_InputState::UP}, {IOD_KEY_F12, IOD_InputState::UP},
-
-    {IOD_MOUSE_BUTTON_LEFT, IOD_InputState::UP},
-    {IOD_MOUSE_BUTTON_RIGHT, IOD_InputState::UP},
-    {IOD_MOUSE_BUTTON_MIDDLE, IOD_InputState::UP}
-};
-
-std::unordered_map<std::string, IOD_Profile*> IOD::profiles;
-void* IOD::glfw_window_instance = nullptr;
-float IOD::mouse_x = 0.0f;
-float IOD::mouse_y = 0.0f;
-
-void IOD::updateInputCode(IOD_InputCode code, bool down) {
-    if (down) {
-        IOD::input_state[code] = (IOD::input_state[code] == IOD_InputState::UP || IOD::input_state[code] == IOD_InputState::RELEASED) ? IOD_InputState::PRESSED : IOD_InputState::DOWN;
-    } else {
-        IOD::input_state[code] = (IOD::input_state[code] == IOD_InputState::DOWN || IOD::input_state[code] == IOD_InputState::PRESSED) ? IOD_InputState::RELEASED : IOD_InputState::UP;
-    }
-}
-
-void IOD::updateMousePosition(float x, float y) {
-    mouse_x = x;
-    mouse_y = y;
-}
-
-float IOD::getMouseX() { 
-    return mouse_x; 
-}
-float IOD::getMouseY() { 
-    return mouse_y; 
-}
-
-void IOD::poll() {
-    for (const auto &[code, state] : IOD::input_state) {
-        if (state == IOD_InputState::PRESSED) {
-            IOD::updateInputCode(code, true);
-        } else if (state == IOD_InputState::RELEASED) {
-            IOD::updateInputCode(code, false);
-        }
-    }
-
-    for (const auto &[key, profile] : IOD::profiles) {
-        if (!profile->active) {
-            continue;
+        KeyState state = input_state[code];
+        if (down) {
+            new_state = (state == KeyState::UP || state == KeyState::RELEASED) ? KeyState::PRESSED : KeyState::DOWN;
+        } else {
+            new_state = (state == KeyState::DOWN || state == KeyState::PRESSED) ? KeyState::RELEASED : KeyState::UP;
         }
 
-        for (const auto& [key_pair, fn] : profile->bindings) {
-            IOD_InputCode code = key_pair.first;
-            IOD_InputState desired_states = key_pair.second;
-            IOD_InputState actual_state = IOD::input_state[code];
-            if (IOD_INPUT_STATE_HAS_FLAG(desired_states, actual_state) && fn) {
-                fn();
+        input_state[code] = new_state;
+    }
+
+    void UpdateMousePosition(float x, float y) {
+        mouse_x = x;
+        mouse_y = y;
+    }
+
+    float GetMouseX() { 
+        return mouse_x; 
+    }
+
+    float GetMouseY() { 
+        return mouse_y; 
+    }
+
+    void Init() {
+        input_state = {
+            {KEY_A, KeyState::UP}, {KEY_B, KeyState::UP}, {KEY_C, KeyState::UP},
+            {KEY_D, KeyState::UP}, {KEY_E, KeyState::UP}, {KEY_F, KeyState::UP},
+            {KEY_G, KeyState::UP}, {KEY_H, KeyState::UP}, {KEY_I, KeyState::UP},
+            {KEY_J, KeyState::UP}, {KEY_K, KeyState::UP}, {KEY_L, KeyState::UP},
+            {KEY_M, KeyState::UP}, {KEY_N, KeyState::UP}, {KEY_O, KeyState::UP},
+            {KEY_P, KeyState::UP}, {KEY_Q, KeyState::UP}, {KEY_R, KeyState::UP},
+            {KEY_S, KeyState::UP}, {KEY_T, KeyState::UP}, {KEY_U, KeyState::UP},
+            {KEY_V, KeyState::UP}, {KEY_W, KeyState::UP}, {KEY_X, KeyState::UP},
+            {KEY_Y, KeyState::UP}, {KEY_Z, KeyState::UP},
+
+            {KEY_0, KeyState::UP}, {KEY_1, KeyState::UP}, {KEY_2, KeyState::UP},
+            {KEY_3, KeyState::UP}, {KEY_4, KeyState::UP}, {KEY_5, KeyState::UP},
+            {KEY_6, KeyState::UP}, {KEY_7, KeyState::UP}, {KEY_8, KeyState::UP},
+            {KEY_9, KeyState::UP},
+
+            {KEY_SPACE, KeyState::UP}, {KEY_ENTER, KeyState::UP},
+            {KEY_ESCAPE, KeyState::UP}, {KEY_TAB, KeyState::UP},
+            {KEY_BACKSPACE, KeyState::UP},
+
+            {KEY_LEFT, KeyState::UP}, {KEY_RIGHT, KeyState::UP},
+            {KEY_UP, KeyState::UP}, {KEY_DOWN, KeyState::UP},
+            {KEY_CTRL, KeyState::UP}, {KEY_SHIFT, KeyState::UP},
+            {KEY_ALT, KeyState::UP},
+
+            {KEY_F1, KeyState::UP}, {KEY_F2, KeyState::UP},
+            {KEY_F3, KeyState::UP}, {KEY_F4, KeyState::UP},
+            {KEY_F5, KeyState::UP}, {KEY_F6, KeyState::UP},
+            {KEY_F7, KeyState::UP}, {KEY_F8, KeyState::UP},
+            {KEY_F9, KeyState::UP}, {KEY_F10, KeyState::UP},
+            {KEY_F11, KeyState::UP}, {KEY_F12, KeyState::UP},
+
+            {MOUSE_BUTTON_LEFT, KeyState::UP},
+            {MOUSE_BUTTON_RIGHT, KeyState::UP},
+            {MOUSE_BUTTON_MIDDLE, KeyState::UP}
+        };
+    }
+
+    void Poll() {
+        for (const auto entry : input_state) {
+            KeyCode code = entry.first;
+            KeyState state = entry.second;
+
+            if (state == KeyState::PRESSED) {
+                UpdateInputCode(code, true);
+            } else if (state == KeyState::RELEASED) {
+                UpdateInputCode(code, false);
+            }
+        }
+
+        for (const auto profile : profiles) {
+            if (!profile.active) {
+                continue;
+            }
+
+            if (profile.callback) {
+                profile.callback();
             }
         }
     }
-}
 
-IOD_InputState IOD::getInputState(IOD_InputCode code) {
-    return IOD::input_state[code];
-}
+    bool GetKey(KeyCode code, KeyState state) {
+        if (!input_state.contains(code)) {
+            printf("[IOD] Pressed a key and it is not mapped yet: %c\n", code);
+            return false;
+        }
 
-IOD_Profile* IOD::createProfile(const std::string &key) {
-    IOD_Profile* ret = new IOD_Profile;
-    ret->active = true;
-    IOD::profiles[key] = ret;
+        KeyState actual_state = input_state[code];
+        return state & actual_state;
+    }
 
-    return ret;
-}
+    bool GetKeyUp(KeyCode code) {
+        return GetKey(code, KeyState::UP);
+    }
 
-IOD_Profile* IOD::getProfile(const std::string &key) {
-    return IOD::profiles.at(key);
-}
+    bool GetKeyPressed(KeyCode code) {
+        return GetKey(code, KeyState::PRESSED);
+    }
 
-void IOD::deleteProfile(const std::string &key) {
-    IOD::profiles.erase(key);
-}
+    bool GetKeyDown(KeyCode code) {
+        return GetKey(code, KeyState::DOWN);
+    }
 
+    bool GetKeyReleased(KeyCode code) {
+        return GetKey(code, KeyState::RELEASED);
+    }
 
-void IOD::enableProfile(const std::string& key) {
-    IOD::profiles.at(key)->active = true;
-}
+    void CreateProfile(const char* key, CALLBACK callback, bool active) {
+        Profile ret;
+        ret.name = key;
+        ret.callback = callback;
+        ret.active = active;
+        profiles.push_back(ret);
+    }
 
-void IOD::disableProfile(const std::string& key) {
-    IOD::profiles.at(key)->active = false;
-}
+    void DeleteProfile(const char* key) {
+        for (int i = 0; i < profiles.size(); i++) {
+            Profile profile = profiles[i];
+            if (strcmp(profile.name, key) == 0) {
+                std::swap(profiles[i], profiles.back());
+                profiles.pop_back(); 
+                return;
+            }
+        }
 
-void IOD_Profile::bind(IOD_InputCode code, IOD_InputState state, const std::function<void ()> fn) {
-    this->bindings[std::make_pair(code, state)] = fn;
+        printf("[IOD] Could not find profile: %s\n", key);
+    }
+
+    void ToggleProfile(const char* key, bool toggle) {
+        for (int i = 0; i < profiles.size(); i++) {
+            Profile* profile = &profiles[i];
+            
+            if (strcmp(profile->name, key) == 0) {
+                profile->active = toggle;
+                return;
+            }
+        }
+
+        printf("[IOD] Could not find profile: %s\n", key);
+    }
+
+    void EnableProfile(const char* key) {
+        for (int i = 0; i < profiles.size(); i++) {
+            Profile* profile = &profiles[i];
+            if (strcmp(profile->name, key) == 0) {
+                profile->active = true;
+                return;
+            }
+        }
+
+        printf("[IOD] Could not find profile: %s\n", key);
+    }
+
+    void DisableProfile(const char* key) {
+        for (int i = 0; i < profiles.size(); i++) {
+            Profile* profile = &profiles[i];
+            if (strcmp(profile->name, key) == 0) {
+                profile->active = false;
+                return;
+            }
+        }
+
+        printf("[IOD] Could not find profile: %s\n", key);
+    }
 }
-void IOD_Profile::unbind(IOD_InputCode code, IOD_InputState state) {
-    auto key = std::pair(code, state);
-    this->bindings.erase(key);
-}
-    
